@@ -196,6 +196,7 @@ static int makeValueWrap(int _val, int _adj, int _min, int _max)
 
 static int do_transcodeFrame(CodecEngine* _ce,
                              const void* _srcFramePtr, size_t _srcFrameSize,
+                             const OutputPalette* _outputPalette,
                              void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                              const TargetDetectParams* _targetDetectParams,
                              const TargetDetectCommand* _targetDetectCommand,
@@ -220,6 +221,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
 
   tcInArgs.alg.widthM  = _ce->m_mxnParams.m_m;
   tcInArgs.alg.heightN = _ce->m_mxnParams.m_n;
+  tcInArgs.alg.isHSV   = _outputPalette->isHSV;
 
 
   TRIK_VIDTRANSCODE_CV_OutArgs tcOutArgs;
@@ -434,6 +436,7 @@ int codecEngineStop(CodecEngine* _ce)
 
 int codecEngineTranscodeFrame(CodecEngine* _ce,
                               const void* _srcFramePtr, size_t _srcFrameSize,
+                              const OutputPalette* _outputPalette,
                               void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                               const TargetDetectParams* _targetDetectParams,
                               const TargetDetectCommand* _targetDetectCommand,
@@ -449,7 +452,7 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
     return ENOTCONN;
 
   res = do_transcodeFrame(_ce,
-                          _srcFramePtr, _srcFrameSize,
+                          _srcFramePtr, _srcFrameSize, _outputPalette,
                           _dstFramePtr, _dstFrameSize, _dstFrameUsed,
                           _targetDetectParams,
                           _targetDetectCommand,

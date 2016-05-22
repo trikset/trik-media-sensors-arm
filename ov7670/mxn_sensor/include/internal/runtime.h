@@ -47,7 +47,8 @@ typedef struct RuntimeState
   TargetDetectParams      m_targetDetectParams;
   TargetDetectCommand     m_targetDetectCommand;
   bool                    m_videoOutEnable;
-  MxnParams               m_mxnParams
+  MxnParams               m_mxnParams;
+  OurpurPalette           m_outputPalette;
 } RuntimeState;
 
 typedef struct Runtime
