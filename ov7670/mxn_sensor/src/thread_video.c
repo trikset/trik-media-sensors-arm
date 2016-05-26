@@ -81,6 +81,12 @@ static int threadVideoSelectLoop(Runtime* _runtime, CodecEngine* _ce, V4L2Input*
     fprintf(stderr, "runtimeFetchTargetDetectCommand() failed: %d\n", res);
     return res;
   }
+  
+  if ((res = runtimeGetOutputPalette(_runtime, &outputPalette)) != 0)
+  {
+    fprintf(stderr, "runtimeGetOutputPalette() failed: %d\n", res);
+    return res;
+  }
 
   if ((res = runtimeGetVideoOutParams(_runtime, &(_ce->m_videoOutEnable))) != 0)
   {

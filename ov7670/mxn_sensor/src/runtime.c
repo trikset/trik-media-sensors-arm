@@ -438,6 +438,17 @@ int runtimeGetVideoOutParams(Runtime* _runtime, bool* _videoOutEnable)
   return 0;
 }
 
+int runtimeGetOutputPalette(Runtime* _runtime, bool* _outputPalette)
+{
+  if (_runtime == NULL || _outputPalette == NULL)
+    return EINVAL;
+
+  pthread_mutex_lock(&_runtime->m_state.m_mutex);
+  *_outputPalette = _runtime->m_state.m_outputPalette;
+  pthread_mutex_unlock(&_runtime->m_state.m_mutex);
+  return 0;
+}
+
 int runtimeSetVideoOutParams(Runtime* _runtime, const bool* _videoOutEnable)
 {
   if (_runtime == NULL || _videoOutEnable == NULL)

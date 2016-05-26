@@ -285,9 +285,32 @@ static int do_transcodeFrame(CodecEngine* _ce,
   memcpy(_targetColors, tcOutArgs.alg.outColor, sizeof(uint32_t)*_ce->m_mxnParams.m_m*_ce->m_mxnParams.m_n);
   _hsvPalette->colorHSV = tcOutArgs.alg.colorHSV;
   
-  fprintf(stderr, "HSV: %0x\n", _hsvPalette->colorHSV);
+  //fprintf(stderr, "isHSV: %i\n", tcInArgs.alg.isHSV);
+  //fprintf(stderr, "HSV: %0x\n", (_hsvPalette->colorHSV >>16) & 0xFF);
+  if (tcInArgs.alg.isHSV) getColor(_hsvPalette->colorHSV);
 
   return 0;
+}
+
+void getColor (uint32_t _colorHSV)
+{
+  int H = ((_colorHSV >> 16) & 0xFF) * 360 / 255;
+  double S = ((_colorHSV >> 8) & 0xFF) / 255.0f;
+  double V = (_colorHSV & 0xFF) / 255.0f;
+  
+  if (V > 0.9 && S < 0.1) fprintf(stderr, "White (%d, %f, %f)\n", H, S, V);
+  else
+  if (V < 0.15 && S < 0.15) fprintf(stderr, "Black (%d, %f, %f)\n", H, S, V); 
+  else
+    switch(((H + 30) / 60) % 6)
+    {
+      case 0: fprintf(stderr, "Red (%d, %f, %f)\n", H, S, V); break;
+      case 1: fprintf(stderr, "Yellow (%d, %f, %f)\n", H, S, V); break;
+      case 2: fprintf(stderr, "Green (%d, %f, %f)\n", H, S, V); break;
+      case 3: fprintf(stderr, "Light blue (%d, %f, %f)\n", H, S, V); break;
+      case 4: fprintf(stderr, "Blue (%d, %f, %f)\n", H, S, V); break;
+      case 5: fprintf(stderr, "Pink (%d, %f, %f)\n", H, S, V); break;
+    }
 }
 
 static int do_reportLoad(const CodecEngine* _ce, long long _ms)
