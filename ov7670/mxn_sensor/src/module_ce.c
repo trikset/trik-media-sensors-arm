@@ -196,18 +196,18 @@ static int makeValueWrap(int _val, int _adj, int _min, int _max)
 
 static int do_transcodeFrame(CodecEngine* _ce,
                              const void* _srcFramePtr, size_t _srcFrameSize,
-                             const OutputPalette* _outputPalette,
+                             const bool _outputPalette,
                              void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                              const TargetDetectParams* _targetDetectParams,
                              const TargetDetectCommand* _targetDetectCommand,
-                             TargetColors* _targetColors,
+                             TargetColors* _targetColors, HSVPalette* _hsvPalette,
                              TargetDetectParams* _targetDetectParamsResult)
 {
   if (_ce->m_srcBuffer == NULL || _ce->m_dstBuffer == NULL)
     return ENOTCONN;
   if (   _srcFramePtr == NULL || _dstFramePtr == NULL
       || _targetDetectParams == NULL || _targetDetectCommand == NULL
-      || _targetColors == NULL || _targetDetectParamsResult == NULL)
+      || _targetColors == NULL || _targetDetectParamsResult == NULL || _hsvPalette == NULL)
     return EINVAL;
   if (_srcFrameSize > _ce->m_srcBufferSize || _dstFrameSize > _ce->m_dstBufferSize)
     return ENOSPC;
@@ -221,7 +221,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
 
   tcInArgs.alg.widthM  = _ce->m_mxnParams.m_m;
   tcInArgs.alg.heightN = _ce->m_mxnParams.m_n;
-  tcInArgs.alg.isHSV   = _outputPalette->isHSV;
+  tcInArgs.alg.isHSV   = _outputPalette;
 
 
   TRIK_VIDTRANSCODE_CV_OutArgs tcOutArgs;
@@ -251,6 +251,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
   Memory_cacheInv(_ce->m_dstBuffer, _ce->m_dstBufferSize); // invalidate *whole* cache, not only expected portion, just in case
 
   XDAS_Int32 processResult = VIDTRANSCODE_process(_ce->m_vidtranscodeHandle, &tcInBufDesc, &tcOutBufDesc, &tcInArgs.base, &tcOutArgs.base);
+  
   if (processResult != IVIDTRANSCODE_EOK)
   {
     fprintf(stderr, "VIDTRANSCODE_process(%zu -> %zu) failed: %"PRIi32"/%"PRIi32"\n",
@@ -282,6 +283,9 @@ static int do_transcodeFrame(CodecEngine* _ce,
 */
 
   memcpy(_targetColors, tcOutArgs.alg.outColor, sizeof(uint32_t)*_ce->m_mxnParams.m_m*_ce->m_mxnParams.m_n);
+  _hsvPalette->colorHSV = tcOutArgs.alg.colorHSV;
+  
+  fprintf(stderr, "HSV: %0x\n", _hsvPalette->colorHSV);
 
   return 0;
 }
@@ -436,11 +440,11 @@ int codecEngineStop(CodecEngine* _ce)
 
 int codecEngineTranscodeFrame(CodecEngine* _ce,
                               const void* _srcFramePtr, size_t _srcFrameSize,
-                              const OutputPalette* _outputPalette,
+                              const bool _outputPalette,
                               void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                               const TargetDetectParams* _targetDetectParams,
                               const TargetDetectCommand* _targetDetectCommand,
-                              TargetColors* _targetColors,
+                              TargetColors* _targetColors, HSVPalette* _hsvPalette,
                               TargetDetectParams* _targetDetectParamsResult)
 {
   int res;
@@ -456,7 +460,7 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
                           _dstFramePtr, _dstFrameSize, _dstFrameUsed,
                           _targetDetectParams,
                           _targetDetectCommand,
-                          _targetColors,
+                          _targetColors, _hsvPalette,
                           _targetDetectParamsResult);
 
   if (s_verbose)

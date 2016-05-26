@@ -18,10 +18,10 @@ typedef struct MxnParams
   size_t m_n;
 } MxnParams;
 
-typedef struct OutputPalette
+typedef struct HSVPalette
 {
-    bool isHSV; //RGB - false (defalut), HSV - true
-}OutputPalette;
+  uint32_t colorHSV;
+} HSVPalette;
 
 typedef struct ImageDescription
 {

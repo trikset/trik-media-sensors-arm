@@ -44,8 +44,7 @@ void runtimeReset(Runtime* _runtime)
   pthread_mutex_init(&_runtime->m_state.m_mutex, NULL);
   memset(&_runtime->m_state.m_targetDetectParams,  0, sizeof(_runtime->m_state.m_targetDetectParams));
   memset(&_runtime->m_state.m_targetDetectCommand, 0, sizeof(_runtime->m_state.m_targetDetectCommand));
-  memset(&_runtime->m_state.m_outputPalette, 0, sizeof(_runtime->m_state.m_outputPalette));
-  _runtime->m_state.m_outputPalette.isHSV = false;
+  _runtime->m_state.m_outputPalette = false; 
 }
 
 
@@ -134,7 +133,7 @@ bool runtimeParseArgs(Runtime* _runtime, int _argc, char* const _argv[])
             return false;
         }
         break;
-      case 'p': _runtime->m_state.m_outputPalette.isHSV = true; break;
+      case 'p': _runtime->m_state.m_outputPalette = true; break;
       
       case 'h':
       default:
@@ -459,17 +458,6 @@ int runtimeGetMxnParams(Runtime* _runtime, MxnParams* _mxnParams)
   *_mxnParams = _runtime->m_state.m_mxnParams;
   pthread_mutex_unlock(&_runtime->m_state.m_mutex);
   return 0;
-}
-
-bool runtimeGetOutputPalette (Runtime* _runtime, OutputPalette* _outputPalette)
-{
-    if (_runtime == NULL || _outputPalette == NULL)
-        return EINVAL;
-
-    pthread_mutex_lock(&_runtime->m_state.m_mutex);
-    *_outputPalette = _runtime->m_state.m_outputPalette;
-    pthread_mutex_unlock(&_runtime->m_state.m_mutex);
-    return 0;
 }
 
 int runtimeSetMxnParams(Runtime* _runtime, MxnParams* _mxnParams)

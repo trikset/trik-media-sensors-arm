@@ -54,11 +54,11 @@ int codecEngineStop(CodecEngine* _ce);
 
 int codecEngineTranscodeFrame(CodecEngine* _ce,
                               const void* _srcFramePtr, size_t _srcFrameSize,
-                              const OutputPalette* outputPalette,
+                              const bool outputPalette,
                               void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                               const TargetDetectParams* _targetDetectParams,
                               const TargetDetectCommand* _targetDetectCommand,
-                              TargetColors* _targetColors,
+                              TargetColors* _targetColors, HSVPalette* _hsvPalette,
                               TargetDetectParams* _targetDetectParamsResult);
 
 
