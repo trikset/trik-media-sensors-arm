@@ -200,14 +200,14 @@ static int do_transcodeFrame(CodecEngine* _ce,
                              void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                              const TargetDetectParams* _targetDetectParams,
                              const TargetDetectCommand* _targetDetectCommand,
-                             TargetColors* _targetColors, HSVPalette* _hsvPalette,
+                             TargetColors* _targetColors,
                              TargetDetectParams* _targetDetectParamsResult)
 {
   if (_ce->m_srcBuffer == NULL || _ce->m_dstBuffer == NULL)
     return ENOTCONN;
   if (   _srcFramePtr == NULL || _dstFramePtr == NULL
       || _targetDetectParams == NULL || _targetDetectCommand == NULL
-      || _targetColors == NULL || _targetDetectParamsResult == NULL || _hsvPalette == NULL)
+      || _targetColors == NULL || _targetDetectParamsResult == NULL)
     return EINVAL;
   if (_srcFrameSize > _ce->m_srcBufferSize || _dstFrameSize > _ce->m_dstBufferSize)
     return ENOSPC;
@@ -283,11 +283,10 @@ static int do_transcodeFrame(CodecEngine* _ce,
 */
 
   memcpy(_targetColors, tcOutArgs.alg.outColor, sizeof(uint32_t)*_ce->m_mxnParams.m_m*_ce->m_mxnParams.m_n);
-  _hsvPalette->colorHSV = tcOutArgs.alg.colorHSV;
   
   //fprintf(stderr, "isHSV: %i\n", tcInArgs.alg.isHSV);
   //fprintf(stderr, "HSV: %0x\n", (_hsvPalette->colorHSV >>16) & 0xFF);
-  if (tcInArgs.alg.isHSV) getColor(_hsvPalette->colorHSV);
+  if (tcInArgs.alg.isHSV) getColor(_targetColors->m_colors[5]);
 
   return 0;
 }
@@ -298,7 +297,7 @@ void getColor (uint32_t _colorHSV)
   double S = ((_colorHSV >> 8) & 0xFF) / 255.0f;
   double V = (_colorHSV & 0xFF) / 255.0f;
   
-  if (V > 0.9 && S < 0.1) fprintf(stderr, "White (%d, %f, %f)\n", H, S, V);
+  if (V > 0.6 && S < 0.2) fprintf(stderr, "White (%d, %f, %f)\n", H, S, V);
   else
   if (V < 0.15 && S < 0.15) fprintf(stderr, "Black (%d, %f, %f)\n", H, S, V); 
   else
@@ -467,7 +466,7 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
                               void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                               const TargetDetectParams* _targetDetectParams,
                               const TargetDetectCommand* _targetDetectCommand,
-                              TargetColors* _targetColors, HSVPalette* _hsvPalette,
+                              TargetColors* _targetColors, 
                               TargetDetectParams* _targetDetectParamsResult)
 {
   int res;
@@ -483,7 +482,7 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
                           _dstFramePtr, _dstFrameSize, _dstFrameUsed,
                           _targetDetectParams,
                           _targetDetectCommand,
-                          _targetColors, _hsvPalette,
+                          _targetColors, 
                           _targetDetectParamsResult);
 
   if (s_verbose)

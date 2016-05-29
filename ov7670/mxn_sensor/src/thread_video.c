@@ -67,7 +67,6 @@ static int threadVideoSelectLoop(Runtime* _runtime, CodecEngine* _ce, V4L2Input*
   TargetLocation      targetLocation;
   TargetDetectParams  targetDetectParamsResult;
   TargetColors      targetColors;
-  HSVPalette        colorHSV;
   MxnParams         mxnParams;
   bool              outputPalette;
   
@@ -107,7 +106,7 @@ static int threadVideoSelectLoop(Runtime* _runtime, CodecEngine* _ce, V4L2Input*
                                        frameDstPtr, frameDstSize, &frameDstUsed,
                                        &targetDetectParams,
                                        &targetDetectCommand,
-                                       &targetColors, &colorHSV,
+                                       &targetColors, 
                                        &targetDetectParamsResult)) != 0)
   {
     fprintf(stderr, "codecEngineTranscodeFrame(%p[%zu] -> %p[%zu]) failed: %d\n",

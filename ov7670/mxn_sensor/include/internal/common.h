@@ -18,11 +18,6 @@ typedef struct MxnParams
   size_t m_n;
 } MxnParams;
 
-typedef struct HSVPalette
-{
-  uint32_t colorHSV;
-} HSVPalette;
-
 typedef struct ImageDescription
 {
   size_t m_width;

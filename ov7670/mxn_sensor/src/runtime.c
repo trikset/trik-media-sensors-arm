@@ -44,7 +44,7 @@ void runtimeReset(Runtime* _runtime)
   pthread_mutex_init(&_runtime->m_state.m_mutex, NULL);
   memset(&_runtime->m_state.m_targetDetectParams,  0, sizeof(_runtime->m_state.m_targetDetectParams));
   memset(&_runtime->m_state.m_targetDetectCommand, 0, sizeof(_runtime->m_state.m_targetDetectCommand));
-  _runtime->m_state.m_outputPalette = false; 
+  _runtime->m_state.m_outputPalette = true; 
 }
 
 

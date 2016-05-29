@@ -58,7 +58,7 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
                               void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                               const TargetDetectParams* _targetDetectParams,
                               const TargetDetectCommand* _targetDetectCommand,
-                              TargetColors* _targetColors, HSVPalette* _hsvPalette,
+                              TargetColors* _targetColors,
                               TargetDetectParams* _targetDetectParamsResult);
 
 
