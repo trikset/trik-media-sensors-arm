@@ -196,6 +196,7 @@ static int makeValueWrap(int _val, int _adj, int _min, int _max)
 
 static int do_transcodeFrame(CodecEngine* _ce,
                              const void* _srcFramePtr, size_t _srcFrameSize,
+                             const bool _outputPalette,
                              void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                              const TargetDetectParams* _targetDetectParams,
                              const TargetDetectCommand* _targetDetectCommand,
@@ -220,6 +221,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
 
   tcInArgs.alg.widthM  = _ce->m_mxnParams.m_m;
   tcInArgs.alg.heightN = _ce->m_mxnParams.m_n;
+  tcInArgs.alg.isHSV   = _outputPalette;
 
 
   TRIK_VIDTRANSCODE_CV_OutArgs tcOutArgs;
@@ -249,6 +251,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
   Memory_cacheInv(_ce->m_dstBuffer, _ce->m_dstBufferSize); // invalidate *whole* cache, not only expected portion, just in case
 
   XDAS_Int32 processResult = VIDTRANSCODE_process(_ce->m_vidtranscodeHandle, &tcInBufDesc, &tcOutBufDesc, &tcInArgs.base, &tcOutArgs.base);
+  
   if (processResult != IVIDTRANSCODE_EOK)
   {
     fprintf(stderr, "VIDTRANSCODE_process(%zu -> %zu) failed: %"PRIi32"/%"PRIi32"\n",
@@ -280,8 +283,33 @@ static int do_transcodeFrame(CodecEngine* _ce,
 */
 
   memcpy(_targetColors, tcOutArgs.alg.outColor, sizeof(uint32_t)*_ce->m_mxnParams.m_m*_ce->m_mxnParams.m_n);
+  
+  //fprintf(stderr, "isHSV: %i\n", tcInArgs.alg.isHSV);
+  //fprintf(stderr, "HSV: %0x\n", (_hsvPalette->colorHSV >>16) & 0xFF);
+  if (tcInArgs.alg.isHSV) getColor(_targetColors->m_colors[5]);
 
   return 0;
+}
+
+void getColor (uint32_t _colorHSV)
+{
+  int H = ((_colorHSV >> 16) & 0xFF) * 360 / 255;
+  double S = ((_colorHSV >> 8) & 0xFF) / 255.0f;
+  double V = (_colorHSV & 0xFF) / 255.0f;
+  
+  if (V > 0.6 && S < 0.2) fprintf(stderr, "White (%d, %f, %f)\n", H, S, V);
+  else
+  if (V < 0.15 && S < 0.15) fprintf(stderr, "Black (%d, %f, %f)\n", H, S, V); 
+  else
+    switch(((H + 30) / 60) % 6)
+    {
+      case 0: fprintf(stderr, "Red (%d, %f, %f)\n", H, S, V); break;
+      case 1: fprintf(stderr, "Yellow (%d, %f, %f)\n", H, S, V); break;
+      case 2: fprintf(stderr, "Green (%d, %f, %f)\n", H, S, V); break;
+      case 3: fprintf(stderr, "Light blue (%d, %f, %f)\n", H, S, V); break;
+      case 4: fprintf(stderr, "Blue (%d, %f, %f)\n", H, S, V); break;
+      case 5: fprintf(stderr, "Pink (%d, %f, %f)\n", H, S, V); break;
+    }
 }
 
 static int do_reportLoad(const CodecEngine* _ce, long long _ms)
@@ -434,10 +462,11 @@ int codecEngineStop(CodecEngine* _ce)
 
 int codecEngineTranscodeFrame(CodecEngine* _ce,
                               const void* _srcFramePtr, size_t _srcFrameSize,
+                              const bool _outputPalette,
                               void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                               const TargetDetectParams* _targetDetectParams,
                               const TargetDetectCommand* _targetDetectCommand,
-                              TargetColors* _targetColors,
+                              TargetColors* _targetColors, 
                               TargetDetectParams* _targetDetectParamsResult)
 {
   int res;
@@ -449,11 +478,11 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
     return ENOTCONN;
 
   res = do_transcodeFrame(_ce,
-                          _srcFramePtr, _srcFrameSize,
+                          _srcFramePtr, _srcFrameSize, _outputPalette,
                           _dstFramePtr, _dstFrameSize, _dstFrameUsed,
                           _targetDetectParams,
                           _targetDetectCommand,
-                          _targetColors,
+                          _targetColors, 
                           _targetDetectParamsResult);
 
   if (s_verbose)
