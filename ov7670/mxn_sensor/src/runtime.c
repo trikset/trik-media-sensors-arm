@@ -44,7 +44,7 @@ void runtimeReset(Runtime* _runtime)
   pthread_mutex_init(&_runtime->m_state.m_mutex, NULL);
   memset(&_runtime->m_state.m_targetDetectParams,  0, sizeof(_runtime->m_state.m_targetDetectParams));
   memset(&_runtime->m_state.m_targetDetectCommand, 0, sizeof(_runtime->m_state.m_targetDetectCommand));
-  _runtime->m_state.m_outputPalette = true; 
+  _runtime->m_state.m_returnHSV = false; 
 }
 
 
@@ -71,7 +71,7 @@ bool runtimeParseArgs(Runtime* _runtime, int _argc, char* const _argv[])
     { "video-out",		1,	NULL,	0   }, //7+2
     { "mxn-width-m",		1,	NULL,	0   }, //7+3
     { "mxn-height-n",		1,	NULL,	0   }, //7+4
-    { "hsv",                    0,      NULL,   'p'   },
+    { "hsv",                    0,      NULL,   'r'   },
     { "verbose",		0,	NULL,	'v' },
     { "help",			0,	NULL,	'h' },
     { NULL,			0,	NULL,	0   }
@@ -133,7 +133,7 @@ bool runtimeParseArgs(Runtime* _runtime, int _argc, char* const _argv[])
             return false;
         }
         break;
-      case 'p': _runtime->m_state.m_outputPalette = true; break;
+      case 'r': _runtime->m_state.m_returnHSV = true; break;
       
       case 'h':
       default:
@@ -438,14 +438,12 @@ int runtimeGetVideoOutParams(Runtime* _runtime, bool* _videoOutEnable)
   return 0;
 }
 
-int runtimeGetOutputPalette(Runtime* _runtime, bool* _outputPalette)
+int runtimeGetBoolReturnHSV(Runtime* _runtime, bool* _returnHSV)
 {
-  if (_runtime == NULL || _outputPalette == NULL)
+  if (_runtime == NULL || _returnHSV == NULL)
     return EINVAL;
 
-  pthread_mutex_lock(&_runtime->m_state.m_mutex);
-  *_outputPalette = _runtime->m_state.m_outputPalette;
-  pthread_mutex_unlock(&_runtime->m_state.m_mutex);
+  *_returnHSV = _runtime->m_state.m_returnHSV;
   return 0;
 }
 
