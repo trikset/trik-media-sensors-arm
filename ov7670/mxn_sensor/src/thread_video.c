@@ -81,7 +81,7 @@ static int threadVideoSelectLoop(Runtime* _runtime, CodecEngine* _ce, V4L2Input*
     return res;
   }
   
-  if ((res = runtimeGetBoolReturnHSV(_runtime, &returnHSV)) != 0)
+  if ((res = runtimeGetBoolReturnHSVParams(_runtime, &returnHSV)) != 0)
   {
     fprintf(stderr, "runtimeGetBoolReturnHSV() failed: %d\n", res);
     return res;

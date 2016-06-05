@@ -91,10 +91,11 @@ int  runtimeFetchTargetDetectCommand(Runtime* _runtime, TargetDetectCommand* _ta
 int  runtimeSetTargetDetectCommand(Runtime* _runtime, const TargetDetectCommand* _targetDetectCommand);
 
 int runtimeGetVideoOutParams(Runtime* _runtime, bool* _videoOutEnable);
-int runtimeGetBoolReturnHSV(Runtime* _runtime, bool* _returnHSV);
 int runtimeSetVideoOutParams(Runtime* _runtime, const bool* _videoOutEnable);
 int runtimeGetMxnParams(Runtime* _runtime, MxnParams* _mxnParams);
 int runtimeSetMxnParams(Runtime* _runtime, MxnParams* _mxnParams);
+int runtimeGetBoolReturnHSV(Runtime* _runtime, bool* _returnHSV);
+int runtimeSetBoolReturnHSV(Runtime* _runtime, bool* _returnHSV);
 
 int  runtimeReportTargetLocation(Runtime* _runtime, const TargetLocation* _targetLocation);
 int  runtimeReportTargetColors(Runtime* _runtime, const TargetColors* _targetColors);

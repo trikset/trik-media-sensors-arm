@@ -15,6 +15,7 @@ typedef struct RCConfig // what user wants to set
   const char* m_fifoInput;
   const char* m_fifoOutput;
   bool m_videoOutEnable;
+  bool m_returnHSV;
   MxnParams   m_mxnParams;
 } RCConfig;
 
@@ -45,6 +46,9 @@ typedef struct RCInput
 
   bool                     m_mxnParamsUpdated;
   MxnParams                m_mxnParams;
+  
+  bool                     m_returnHSVUpdated;
+  bool                     m_returnHSV;
 } RCInput;
 
 
@@ -64,6 +68,7 @@ int rcInputGetTargetDetectParams(RCInput* _rc, TargetDetectParams* _targetDetect
 int rcInputGetTargetDetectCommand(RCInput* _rc, TargetDetectCommand* _targetDetectCommand);
 
 int rcInputGetVideoOutParams(RCInput* _rc, bool *_videoOutEnable);
+int rcInputGetBoolReturnHSVParams(RCInput* _rc, bool *_returnHSV);
 int rcInputUnsafeReportTargetColors(RCInput* _rc, const TargetColors* _targetColors);
 
 int rcInputUnsafeReportTargetLocation(RCInput* _rc, const TargetLocation* _targetLocation);
