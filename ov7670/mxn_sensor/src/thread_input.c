@@ -106,6 +106,24 @@ static int threadInputSelectLoop(Runtime* _runtime, RCInput* _rc)
     }
   }
 
+  bool returnHSV;
+  if ((res = rcInputGetBoolReturnHSVParams(_rc, &returnHSV)) != 0)
+  {
+    if (res != ENODATA)
+    {
+      fprintf(stderr, "rcInputGetBoolReturnHSVParams() failed: %d\n", res);
+      return res;
+    }
+  }
+  else
+  {
+    if ((res = runtimeSetBoolReturnHSVParams(_runtime, &returnHSV)) != 0)
+    {
+      fprintf(stderr, "runtimeSetReturnHSVParams() failed: %d\n", res);
+      return res;
+    }
+  }
+
   TargetDetectCommand targetDetectCommand;
   if ((res = rcInputGetTargetDetectCommand(_rc, &targetDetectCommand)) != 0)
   {
