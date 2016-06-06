@@ -70,7 +70,7 @@ bool runtimeParseArgs(Runtime* _runtime, int _argc, char* const _argv[])
     { "video-out",		1,	NULL,	0   }, //7+2
     { "mxn-width-m",		1,	NULL,	0   }, //7+3
     { "mxn-height-n",		1,	NULL,	0   }, //7+4
-    { "hsv",                    0,      NULL,   'r'   },
+    { "hsv",                    0,      NULL,   0 }, //7+5
     { "verbose",		0,	NULL,	'v' },
     { "help",			0,	NULL,	'h' },
     { NULL,			0,	NULL,	0   }
@@ -126,13 +126,13 @@ bool runtimeParseArgs(Runtime* _runtime, int _argc, char* const _argv[])
             _runtime->m_modules.m_rcInput.m_mxnParams.m_n = 
               atoi(optarg) < COLORS_HEIGHTN_MAX ? atoi(optarg) : COLORS_HEIGHTN_MAX;
             break;
-          
+          case 7+5: cfg->m_rcConfig.m_returnHSV = true; break;
 
           default:
             return false;
         }
         break;
-      case 'r': cfg->m_rcConfig.m_returnHSV = true; break;
+
       
       case 'h':
       default:
