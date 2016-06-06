@@ -196,7 +196,7 @@ static int makeValueWrap(int _val, int _adj, int _min, int _max)
 
 static int do_transcodeFrame(CodecEngine* _ce,
                              const void* _srcFramePtr, size_t _srcFrameSize,
-                             bool _outputPalette,
+                             bool _returnHSV,
                              void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                              const TargetDetectParams* _targetDetectParams,
                              const TargetDetectCommand* _targetDetectCommand,
@@ -221,7 +221,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
 
   tcInArgs.alg.widthM  = _ce->m_mxnParams.m_m;
   tcInArgs.alg.heightN = _ce->m_mxnParams.m_n;
-  tcInArgs.alg.isHSV   = _outputPalette;
+  tcInArgs.alg.isHSV   = _returnHSV;
 
 
   TRIK_VIDTRANSCODE_CV_OutArgs tcOutArgs;
