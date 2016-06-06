@@ -442,7 +442,7 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
                               void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                               const TargetDetectParams* _targetDetectParams,
                               const TargetDetectCommand* _targetDetectCommand,
-                              TargetColors* _targetColors, 
+                              TargetColors* _targetColors,
                               TargetDetectParams* _targetDetectParamsResult)
 {
   int res;
@@ -458,7 +458,7 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
                           _dstFramePtr, _dstFrameSize, _dstFrameUsed,
                           _targetDetectParams,
                           _targetDetectCommand,
-                          _targetColors, 
+                          _targetColors,
                           _targetDetectParamsResult);
 
   if (s_verbose)
