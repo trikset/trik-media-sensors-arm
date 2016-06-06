@@ -68,6 +68,8 @@ static int threadVideoSelectLoop(Runtime* _runtime, CodecEngine* _ce, V4L2Input*
   TargetDetectParams  targetDetectParamsResult;
   TargetColors      targetColors;
   MxnParams         mxnParams;
+  bool              returnHSV;
+  
   if ((res = runtimeGetTargetDetectParams(_runtime, &targetDetectParams)) != 0)
   {
     fprintf(stderr, "runtimeGetTargetDetectParams() failed: %d\n", res);
@@ -76,6 +78,12 @@ static int threadVideoSelectLoop(Runtime* _runtime, CodecEngine* _ce, V4L2Input*
   if ((res = runtimeFetchTargetDetectCommand(_runtime, &targetDetectCommand)) != 0)
   {
     fprintf(stderr, "runtimeFetchTargetDetectCommand() failed: %d\n", res);
+    return res;
+  }
+  
+  if ((res = runtimeGetBoolReturnHSVParams(_runtime, &returnHSV)) != 0)
+  {
+    fprintf(stderr, "runtimeGetBoolReturnHSV() failed: %d\n", res);
     return res;
   }
 
@@ -94,11 +102,11 @@ static int threadVideoSelectLoop(Runtime* _runtime, CodecEngine* _ce, V4L2Input*
 
   size_t frameDstUsed = frameDstSize;
   if ((res = codecEngineTranscodeFrame(_ce,
-                                       frameSrcPtr, frameSrcSize,
+                                       frameSrcPtr, frameSrcSize, returnHSV,
                                        frameDstPtr, frameDstSize, &frameDstUsed,
                                        &targetDetectParams,
                                        &targetDetectCommand,
-                                       &targetColors,
+                                       &targetColors, 
                                        &targetDetectParamsResult)) != 0)
   {
     fprintf(stderr, "codecEngineTranscodeFrame(%p[%zu] -> %p[%zu]) failed: %d\n",
