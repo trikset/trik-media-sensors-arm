@@ -19,7 +19,7 @@ static const RuntimeConfig s_runtimeConfig = {
   .m_codecEngineConfig = { "dsp_server.xe674", "vidtranscode_cv"},
   .m_v4l2Config        = { "/dev/video0", 320, 240, V4L2_PIX_FMT_YUV422P },
   .m_fbConfig          = { "/dev/fb0" },
-  .m_rcConfig          = { "/run/mxn-sensor.in.fifo", "/run/mxn-sensor.out.fifo", true, {3, 3}}
+  .m_rcConfig          = { "/run/mxn-sensor.in.fifo", "/run/mxn-sensor.out.fifo", true, false, {3, 3}}
 };
 
 
@@ -70,6 +70,7 @@ bool runtimeParseArgs(Runtime* _runtime, int _argc, char* const _argv[])
     { "video-out",		1,	NULL,	0   }, //7+2
     { "mxn-width-m",		1,	NULL,	0   }, //7+3
     { "mxn-height-n",		1,	NULL,	0   }, //7+4
+    { "hsv",                   0,      NULL,   0   }, //7+5
     { "verbose",		0,	NULL,	'v' },
     { "help",			0,	NULL,	'h' },
     { NULL,			0,	NULL,	0   }
@@ -125,12 +126,14 @@ bool runtimeParseArgs(Runtime* _runtime, int _argc, char* const _argv[])
             _runtime->m_modules.m_rcInput.m_mxnParams.m_n = 
               atoi(optarg) < COLORS_HEIGHTN_MAX ? atoi(optarg) : COLORS_HEIGHTN_MAX;
             break;
+          case 7+5: cfg->m_rcConfig.m_returnHSV = true; break;
 
           default:
             return false;
         }
         break;
 
+      
       case 'h':
       default:
         return false;
@@ -164,6 +167,8 @@ void runtimeArgsHelpMessage(Runtime* _runtime, const char* _arg0)
 
                   "   --mxn-width-m   <mxn-width-m>\n"
                   "   --mxn-height-n  <mxn-heigth-n>\n"
+
+                  "   --hsv\n"
 
                   "   --verbose\n"
                   "   --help\n",
@@ -461,6 +466,28 @@ int runtimeSetMxnParams(Runtime* _runtime, MxnParams* _mxnParams)
 
   pthread_mutex_lock(&_runtime->m_state.m_mutex);
   _runtime->m_state.m_mxnParams = *_mxnParams;
+  pthread_mutex_unlock(&_runtime->m_state.m_mutex);
+  return 0;
+}
+
+int runtimeGetBoolReturnHSVParams(Runtime* _runtime, bool* _returnHSV)
+{
+  if (_runtime == NULL || _returnHSV == NULL)
+    return EINVAL;
+
+  pthread_mutex_lock(&_runtime->m_state.m_mutex);
+  *_returnHSV = _runtime->m_state.m_returnHSV;
+  pthread_mutex_unlock(&_runtime->m_state.m_mutex);
+  return 0;
+}
+
+int runtimeSetBoolReturnHSVParams(Runtime* _runtime, bool* _returnHSV)
+{
+  if (_runtime == NULL || _returnHSV == NULL)
+    return EINVAL;
+
+  pthread_mutex_lock(&_runtime->m_state.m_mutex);
+  _runtime->m_state.m_returnHSV = *_returnHSV;
   pthread_mutex_unlock(&_runtime->m_state.m_mutex);
   return 0;
 }

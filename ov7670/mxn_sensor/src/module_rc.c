@@ -289,6 +289,11 @@ static int do_readFifoInput(RCInput* _rc)
       _rc->m_targetDetectCommand = 1;
       _rc->m_targetDetectCommandUpdated = true;
     }
+    else if (strncmp(parseAt, "hsv", strlen("hsv")) == 0)
+    {
+      _rc->m_returnHSV        = true;
+      _rc->m_returnHSVUpdated = true;
+    }
     else if (strncmp(parseAt, "hsv ", strlen("hsv ")) == 0)
     {
       int hue, hueTol, sat, satTol, val, valTol;
@@ -382,6 +387,7 @@ int rcInputOpen(RCInput* _rc, const RCConfig* _config)
 
   _rc->m_videoOutEnable = _config->m_videoOutEnable;
   _rc->m_mxnParams      = _config->m_mxnParams;
+  _rc->m_returnHSV      = _config->m_returnHSV;
   return 0;
 }
 
@@ -486,6 +492,18 @@ int rcInputGetMxnParams(RCInput* _rc,
   _rc->m_mxnParamsUpdated = false;
   *_mxnParams              = _rc->m_mxnParams;
 
+  return 0;
+}
+
+int rcInputGetBoolReturnHSVParams(RCInput* _rc, bool *_returnHSV)
+{
+  if (_rc == NULL || _returnHSV == NULL)
+    return EINVAL;
+  
+  _rc->m_returnHSVUpdated = false;
+  *_returnHSV             = _rc->m_returnHSV;
+  //fprintf(stderr, "rcInputGetBoolReturnHSVParams has been invoke. _returnHSV = %d\n", *_returnHSV);
+  
   return 0;
 }
 

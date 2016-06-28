@@ -196,6 +196,7 @@ static int makeValueWrap(int _val, int _adj, int _min, int _max)
 
 static int do_transcodeFrame(CodecEngine* _ce,
                              const void* _srcFramePtr, size_t _srcFrameSize,
+                             bool _returnHSV,
                              void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                              const TargetDetectParams* _targetDetectParams,
                              const TargetDetectCommand* _targetDetectCommand,
@@ -220,6 +221,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
 
   tcInArgs.alg.widthM  = _ce->m_mxnParams.m_m;
   tcInArgs.alg.heightN = _ce->m_mxnParams.m_n;
+  tcInArgs.alg.isHSV   = _returnHSV;
 
 
   TRIK_VIDTRANSCODE_CV_OutArgs tcOutArgs;
@@ -249,6 +251,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
   Memory_cacheInv(_ce->m_dstBuffer, _ce->m_dstBufferSize); // invalidate *whole* cache, not only expected portion, just in case
 
   XDAS_Int32 processResult = VIDTRANSCODE_process(_ce->m_vidtranscodeHandle, &tcInBufDesc, &tcOutBufDesc, &tcInArgs.base, &tcOutArgs.base);
+  
   if (processResult != IVIDTRANSCODE_EOK)
   {
     fprintf(stderr, "VIDTRANSCODE_process(%zu -> %zu) failed: %"PRIi32"/%"PRIi32"\n",
@@ -283,6 +286,7 @@ static int do_transcodeFrame(CodecEngine* _ce,
 
   return 0;
 }
+
 
 static int do_reportLoad(const CodecEngine* _ce, long long _ms)
 {
@@ -434,6 +438,7 @@ int codecEngineStop(CodecEngine* _ce)
 
 int codecEngineTranscodeFrame(CodecEngine* _ce,
                               const void* _srcFramePtr, size_t _srcFrameSize,
+                              bool _returnHSV,
                               void* _dstFramePtr, size_t _dstFrameSize, size_t* _dstFrameUsed,
                               const TargetDetectParams* _targetDetectParams,
                               const TargetDetectCommand* _targetDetectCommand,
@@ -449,7 +454,7 @@ int codecEngineTranscodeFrame(CodecEngine* _ce,
     return ENOTCONN;
 
   res = do_transcodeFrame(_ce,
-                          _srcFramePtr, _srcFrameSize,
+                          _srcFramePtr, _srcFrameSize, _returnHSV,
                           _dstFramePtr, _dstFrameSize, _dstFrameUsed,
                           _targetDetectParams,
                           _targetDetectCommand,
